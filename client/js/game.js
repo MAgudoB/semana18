@@ -1,10 +1,13 @@
 $(document).ready(function() {
     loadImages();
     initKeys();
+    canvasHeight = $("#gameCanvas").height();
+    canvasWidth = $("#gameCanvas").width();
     canvas = document.getElementById("gameCanvas");
     context = canvas.getContext("2d");
     context.fillStyle = "red"
     socket = new WebSocket(url);
+
     // Mensaje cuando se produce la conexion exitosa
     socket.onopen = function(msg) {
         console.log("Connected");
@@ -20,14 +23,13 @@ $(document).ready(function() {
 
     // Que voy a hacer cuando el servidor me envie un mensaje
     socket.onmessage = function(msg) {
-        //console.log(msg.data)
-
+        console.log(msg.data)
         //contexto.clearRect(0,0,512,512)
-        var numeropartido = msg.data.split("|").length;
+        /*var numeropartido = msg.data.split("|").length;
         for (var i = 0; i < numeropartido / 3; i++) {
             context.fillStyle = "rgb(" + msg.data.split("|")[i * 3 + 2] + ")"
             context.fillRect(msg.data.split("|")[i * 3], msg.data.split("|")[i * 3 + 1], 3, 3)
-        }
+        }*/
 
     };
 
@@ -38,14 +40,21 @@ $(document).ready(function() {
 
 });
 
+
+
 function bucle() {
     //$("#posx").val(parseInt($("#posx").val()) + derecha);
     //$("#posy").val(parseInt($("#posy").val()) + arriba);
-    //socket.send($("#posx").val() + "|" + $("#posy").val() + "|" + $("#color").val());
+    enviarInformacion();
     context.clearRect(0, 0, 1000, 1000)
     player.update();
-    for (var i in players) {
-        players[i].update();
-    }
+    drawBullets();
+    drawPlayers();
     setTimeout("bucle()", 10);
+}
+
+function enviarInformacion() {
+    //socket.send($("#posx").val() + "|" + $("#posy").val() + "|" + $("#color").val());
+    //socket.send(player);
+    socket.send(JSON.stringify(player));
 }

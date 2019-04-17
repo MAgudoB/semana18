@@ -1,6 +1,9 @@
 var canvas;
 var context;
 
+var canvasHeight;
+var canvasWidth;
+
 
 var url = "wss://semana17-magudob.c9users.io:8082/echobot";
 var socket;
@@ -15,7 +18,9 @@ var ship3 = new Image();
 var ship4 = new Image();
 var ship5 = new Image();
 var ship6 = new Image();
+var cannonBall = new Image();
 
 //
 var player;
 var players = new Array();
+var bullets = new Array();

@@ -21,6 +21,7 @@ function loadImages() {
     ship4.src = "img/Ships/ship4.png";
     ship5.src = "img/Ships/ship5.png";
     ship6.src = "img/Ships/ship6.png";
+    cannonBall.src = "img/ShipParts/cannonBall.png";
 }
 
 function randomRangeNumber(min, max) {
@@ -63,4 +64,23 @@ function drawImageRot(rotContext, img, x, y, width, height, rad) {
     //reset the canvas
     rotContext.rotate((rad) * (-1));
     rotContext.translate((x + width / 2) * (-1), (y + height / 2) * (-1));
+}
+
+function drawBullets() {
+    for (var i in bullets) {
+        bullets[i].update();
+    }
+}
+
+function drawPlayers() {
+    for (var i in players) {
+        players[i].update();
+    }
+}
+
+function squareCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return x1 < x2 + w2 &&
+        x1 + w1 > x2 &&
+        y1 < y2 + h2 &&
+        y1 + h1 > y2;
 }

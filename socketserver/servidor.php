@@ -13,16 +13,16 @@ class echoServer extends WebSocketServer {
         // Creamos la columna mensaje que contiene el mensaje completo a reenviar
         $this->usuarios[$user->id]['mensaje'] = $message;
 		
-       $longanizassj3 = "";
+        $longanizassj3 = [];
         foreach ($this->usuarios as &$valor) {
             //Comprobamos si se ha desconectado
             if($valor['utc'] > date('U') - 10){
-    		
-    			$longanizassj3 .= $valor[mensaje]."|";
+    			array_push($longanizassj3,$valor[mensaje]);
     		}
         }
-		$this->send($user,$longanizassj3);
-		
+		//$this->send($user,$longanizassj3);
+		//$this->send($user,  json_encode(array_values($longanizassj3)));
+		$this->send($user,  json_encode($longanizassj3));
     }
     
     protected function connected ($user) {
