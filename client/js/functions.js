@@ -28,9 +28,8 @@ function randomRangeNumber(min, max) {
     return Math.round(Math.random() * (max - min) + min);
 }
 
-function getRandomImage() {
+function getImageByNum(num) {
     var image = new Image();
-    var num = randomRangeNumber(0, 5);
     switch (num) {
         case 0:
             image = ship1;
@@ -74,7 +73,7 @@ function drawBullets() {
 
 function drawPlayers() {
     for (var i in players) {
-        players[i].update();
+        players[i].draw();
     }
 }
 
@@ -83,4 +82,28 @@ function squareCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
         x1 + w1 > x2 &&
         y1 < y2 + h2 &&
         y1 + h1 > y2;
+}
+
+function updatePlayers(data) {
+    for (var i in data) {
+        var found = false;
+        var dataObj = JSON.parse(data[i]);
+        for (var p in players) {
+            if (players[p].id == dataObj.id && dataObj.id != player.id) {
+                players[p].x = dataObj.x;
+                players[p].y = dataObj.y;
+                players[p].angle = dataObj.angle;
+                found = true;
+            }
+        }
+        if (!found && dataObj.id != player.id) {
+            createNewPlayer(dataObj);
+        }
+    }
+}
+
+function createNewPlayer(data) {
+    var newPlayer = new Ship(data.x, data.y, getImageByNum(data.imageInd), data.imageInd, data.angle);
+    newPlayer.id = data.id;
+    players.push(newPlayer);
 }

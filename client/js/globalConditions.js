@@ -9,7 +9,8 @@ var url = "wss://semana17-magudob.c9users.io:8082/echobot";
 var socket;
 var dirx = 0;
 var diry = 0;
-
+var firstMessage = false;
+var connected = false;
 
 //Images
 var ship1 = new Image();

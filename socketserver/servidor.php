@@ -6,27 +6,22 @@ class echoServer extends WebSocketServer {
     
     public function process ($user, $message) {
         
-        
-        // Creamos la columna utc para guardarnos la fecha
         $this->usuarios[$user->id]['utc'] = date('U');
         
-        // Creamos la columna mensaje que contiene el mensaje completo a reenviar
         $this->usuarios[$user->id]['mensaje'] = $message;
-		
-        $longanizassj3 = [];
-        foreach ($this->usuarios as &$valor) {
-            //Comprobamos si se ha desconectado
-            if($valor['utc'] > date('U') - 10){
-    			array_push($longanizassj3,$valor[mensaje]);
+        
+        $messages = [];
+        foreach ($this->usuarios as &$val) {
+            if($val['utc'] > date('U') - 10){
+    			array_push($messages,$val[mensaje]);
     		}
         }
-		//$this->send($user,$longanizassj3);
-		//$this->send($user,  json_encode(array_values($longanizassj3)));
-		$this->send($user,  json_encode($longanizassj3));
+        
+		$this->send($user, json_encode($messages));
     }
     
     protected function connected ($user) {
-       
+      	$this->send($user, $user->id);
     }
     
     protected function closed ($user) {

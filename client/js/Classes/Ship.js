@@ -1,10 +1,12 @@
-function Ship(x, y, img) {
+function Ship(x, y, img, imageInd, angle) {
+    this.id = "";
     this.x = x;
     this.y = y;
     this.img = img;
+    this.imageInd = imageInd;
     this.acceleration = 0;
     this.rotation = 0;
-    this.angle = 0;
+    this.angle = angle;
     this.speed = 5;
 
 
