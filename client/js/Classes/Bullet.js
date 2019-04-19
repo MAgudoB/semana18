@@ -1,11 +1,14 @@
-function Bullet(x, y) {
+function Bullet(x, y,playerId, id) {
     this.x = x;
     this.y = y;
+    this.playerId = playerId;
+    this.id = id;
     this.img = cannonBall;
     this.speed = 5;
     this.angle = Math.atan2(this.y, this.x);
     this.velX = Math.cos(this.angle) * this.speed;
     this.velY = Math.sin(this.angle) * this.speed;
+    this.energy = 100;
 
     this.draw = function() {
         context.drawImage(this.img, this.x, this.y);

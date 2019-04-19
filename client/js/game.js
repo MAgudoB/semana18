@@ -7,53 +7,54 @@ $(document).ready(function() {
     context = canvas.getContext("2d");
     firstMessage = false;
     connected = false;
+    playButton = $("#playButton");
     socket = new WebSocket(url);
-
     socket.onopen = function(msg) {
         connected = true;
-        var x = randomRangeNumber(0, 1000);
-        var y = randomRangeNumber(0, 1000);
-        var num = randomRangeNumber(0, 5);
-        player = new Ship(0, 0, getImageByNum(num), num, 0);
+        playButton.on("click", function() {
+            var x = randomRangeNumber(0, 512);
+            var y = randomRangeNumber(0, 512);
+            var num = randomRangeNumber(0, 5);
+            var name = $("#playerName").val();
+            player = new Ship(x, y, getImageByNum(num), num, 0, name);
+            send(getId());
+        });
     };
-    setTimeout(function() {
-        bucle();
-
-    }, 1000)
-
 
     socket.onmessage = function(msg) {
-        if (!firstMessage) {
-            player.id = msg.data;
-            firstMessage = true;
+        var msgJson = JSON.parse(msg.data);
+        switch (msgJson.type) {
+            case UPDATE_ID:
+                updateId(msgJson);
+                break;
+            default:
+                break;
         }
-        else {
-            if (msg != null && msg != undefined) {
-                context.clearRect(0, 0, 1000, 1000)
-                var data = JSON.parse(msg.data);
-                updatePlayers(data);
-                drawBullets();
-                player.update();
-                drawPlayers();
-            }
-        }
+        //parse msg
+        // case id
+        // case new bullet
+        // if (!firstMessage) {
+        //     player.id = msg.data;
+        //     firstMessage = true;
+        // }
+        // else {
+        //     if (msg != null && msg != undefined) {
+        //         context.clearRect(0, 0, 1000, 1000)
+        //         var data = JSON.parse(msg.data);
+        //         updatePlayers(data);
+        //         drawBullets();
+        //         player.update();
+        //         drawPlayers();
+        //     }
+        // }
     };
 
     socket.onclose = function(msg) {
         console.log("cerrado")
     };
-
 });
 
-
-
 function bucle() {
-    if (connected) {
-        sendInfo();
-    }
+    send(postPlayerInfo(player));
     setTimeout("bucle()", 10);
-}
-
-function sendInfo() {
-    socket.send(JSON.stringify(player));
 }

@@ -4,6 +4,7 @@ var context;
 var canvasHeight;
 var canvasWidth;
 
+var playButton;
 
 var url = "wss://semana17-magudob.c9users.io:8082/echobot";
 var socket;
@@ -25,3 +26,13 @@ var cannonBall = new Image();
 var player;
 var players = new Array();
 var bullets = new Array();
+
+//Tipos de mensajes enviados
+GET_ID = 0;
+UPDATE_PLAYER = 1;
+NEW_BULLET = 2;
+
+//Tipos de mensajes recibidos
+UPDATE_ID = 0;
+UPDATE_PLAYERS = 1;
+UPDATE_BULLETS = 2;

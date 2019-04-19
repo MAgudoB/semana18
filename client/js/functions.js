@@ -4,7 +4,8 @@ function initKeys() {
         if (event.key == "s") { player.aceleration = -1; }
         if (event.key == "a") { player.rotation = -0.15; }
         if (event.key == "d") { player.rotation = +0.15; }
-
+        if (event.key == "q") { player.shoot(-90); }
+        if (event.key == "e") { player.shoot(90); }
     });
     $(document).keyup(function(event) {
         if (event.key == "w") { player.acceleration = 0 }
@@ -82,24 +83,6 @@ function squareCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
         x1 + w1 > x2 &&
         y1 < y2 + h2 &&
         y1 + h1 > y2;
-}
-
-function updatePlayers(data) {
-    for (var i in data) {
-        var found = false;
-        var dataObj = JSON.parse(data[i]);
-        for (var p in players) {
-            if (players[p].id == dataObj.id && dataObj.id != player.id) {
-                players[p].x = dataObj.x;
-                players[p].y = dataObj.y;
-                players[p].angle = dataObj.angle;
-                found = true;
-            }
-        }
-        if (!found && dataObj.id != player.id) {
-            createNewPlayer(dataObj);
-        }
-    }
 }
 
 function createNewPlayer(data) {
