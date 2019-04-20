@@ -2,10 +2,10 @@ function initKeys() {
     $(document).keydown(function(event) {
         if (event.key == "w") { player.acceleration = 1; }
         if (event.key == "s") { player.aceleration = -1; }
-        if (event.key == "a") { player.rotation = -0.15; }
-        if (event.key == "d") { player.rotation = +0.15; }
-        if (event.key == "q") { player.shoot(-90); }
-        if (event.key == "e") { player.shoot(90); }
+        if (event.key == "a") { player.rotation = -0.05; }
+        if (event.key == "d") { player.rotation = +0.05; }
+        if (event.key == "q") { player.shoot(-Math.PI / 2); }
+        if (event.key == "e") { player.shoot(Math.PI / 2); }
     });
     $(document).keyup(function(event) {
         if (event.key == "w") { player.acceleration = 0 }
@@ -70,6 +70,9 @@ function drawBullets() {
     for (var i in bullets) {
         bullets[i].update();
     }
+    for (var i in localBullets) {
+        localBullets[i].update();
+    }
 }
 
 function drawPlayers() {
@@ -85,8 +88,13 @@ function squareCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
         y1 + h1 > y2;
 }
 
-function createNewPlayer(data) {
+function createNewPlayer(data, id) {
     var newPlayer = new Ship(data.x, data.y, getImageByNum(data.imageInd), data.imageInd, data.angle);
-    newPlayer.id = data.id;
+    newPlayer.id = id;
     players.push(newPlayer);
+}
+
+function createNewBullet(data) {
+    var newBullet = new Bullet(data.x, data.y, data.angle, data.playerId, data.id);
+    bullets.push(newBullet);
 }

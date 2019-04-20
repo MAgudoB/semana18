@@ -1,11 +1,11 @@
-function Bullet(x, y,playerId, id) {
+function Bullet(x, y, angle, playerId, id) {
     this.x = x;
     this.y = y;
     this.playerId = playerId;
     this.id = id;
     this.img = cannonBall;
     this.speed = 5;
-    this.angle = Math.atan2(this.y, this.x);
+    this.angle = angle
     this.velX = Math.cos(this.angle) * this.speed;
     this.velY = Math.sin(this.angle) * this.speed;
     this.energy = 100;
@@ -33,7 +33,9 @@ function Bullet(x, y,playerId, id) {
 
     this.destroyBullet = function() {
         for (var i in bullets) {
-            bullets.splice(i, 1);
+            if (bullets[i].playerId == this.playerId && bullets[i].id == this.id) {
+                bullets.splice(i, 1);
+            }
         }
     }
 }

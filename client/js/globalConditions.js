@@ -1,6 +1,5 @@
 var canvas;
 var context;
-
 var canvasHeight;
 var canvasWidth;
 
@@ -12,6 +11,9 @@ var dirx = 0;
 var diry = 0;
 var firstMessage = false;
 var connected = false;
+
+var gapx = 0;
+var gapy = 0;
 
 //Images
 var ship1 = new Image();
@@ -25,6 +27,7 @@ var cannonBall = new Image();
 //
 var player;
 var players = new Array();
+var localBullets = new Array();
 var bullets = new Array();
 
 //Tipos de mensajes enviados
@@ -36,3 +39,5 @@ NEW_BULLET = 2;
 UPDATE_ID = 0;
 UPDATE_PLAYERS = 1;
 UPDATE_BULLETS = 2;
+
+TIME_TO_SHOOT = 50;

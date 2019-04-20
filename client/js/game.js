@@ -1,6 +1,6 @@
 $(document).ready(function() {
     loadImages();
-    initKeys();
+    //initKeys();
     canvasHeight = $("#gameCanvas").height();
     canvasWidth = $("#gameCanvas").width();
     canvas = document.getElementById("gameCanvas");
@@ -12,23 +12,32 @@ $(document).ready(function() {
     socket.onopen = function(msg) {
         connected = true;
         playButton.on("click", function() {
-            var x = randomRangeNumber(0, 512);
-            var y = randomRangeNumber(0, 512);
+            var x = randomRangeNumber(0, window.innerWidth);
+            var y = randomRangeNumber(0, window.innerHeight);
             var num = randomRangeNumber(0, 5);
             var name = $("#playerName").val();
             player = new Ship(x, y, getImageByNum(num), num, 0, name);
+            initKeys();
             send(getId());
         });
     };
 
     socket.onmessage = function(msg) {
-        var msgJson = JSON.parse(msg.data);
-        switch (msgJson.type) {
-            case UPDATE_ID:
-                updateId(msgJson);
-                break;
-            default:
-                break;
+        if (msg.data != null && msg.data != undefined && msg.data != "null" && msg.data != "") {
+            var msgJson = JSON.parse(msg.data);
+            switch (msgJson.type) {
+                case UPDATE_ID:
+                    updateId(msgJson);
+                    break;
+                case UPDATE_PLAYERS:
+                    updatePlayers(msgJson);
+                    break;
+                case UPDATE_BULLETS:
+                    updateBullets(msgJson);
+                    break;
+                default:
+                    break;
+            }
         }
         //parse msg
         // case id
@@ -55,6 +64,13 @@ $(document).ready(function() {
 });
 
 function bucle() {
+    context.clearRect(0, 0, canvasWidth, canvasHeight)
+    player.update();
+    drawPlayers();
+    drawBullets();
     send(postPlayerInfo(player));
+    for (var i in localBullets) {
+        send(postLocalBullets(localBullets[i]));
+    }
     setTimeout("bucle()", 10);
 }

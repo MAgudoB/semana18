@@ -1,6 +1,7 @@
 body {
     position: relative;
     background-image: url("../img/Tiles/tile_73.png");
+    margin: 0;
 }
 
 #login {
@@ -9,8 +10,8 @@ body {
     background-color: #ffffffc4;
     border: solid 2px #000000;
     border-radius: 15px;
-    margin-top: 200px;
     text-align: -webkit-center;
+    margin-top: 200px;
 }
 
 #playButton {

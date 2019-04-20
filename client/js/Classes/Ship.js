@@ -16,10 +16,12 @@ function Ship(x, y, img, imageInd, angle, name) {
     this.exp = 0;
     this.ammo = 0;
     this.name = name;
+    this.bulletsShooted = 0;
+    this.nextShoot = 0;
 
 
     this.draw = function() {
-        drawImageRot(context, this.img, this.x, this.y, this.img.width, this.img.height, this.angle)
+        drawImageRot(context, this.img, this.x + gapx, this.y + gapy, this.img.width, this.img.height, this.angle)
     }
 
     this.update = function() {
@@ -28,16 +30,21 @@ function Ship(x, y, img, imageInd, angle, name) {
     }
 
     this.shoot = function(shootAngle) {
-        var bulletAngle = this.angle + shootAngle;
-        var xBullet = this.x + Math.cos(this.angle - Math.PI / 2) * this.speed * this.acceleration;
-        var yBullet = this.y + Math.sin(this.angle - Math.PI / 2) * this.speed * this.acceleration;
-        bullets.push(new Bullet(xBullet, yBullet, this.id, 0));
+        if (this.nextShoot >= TIME_TO_SHOOT) {
+            var bulletAngle = this.angle + shootAngle;
+            var xBullet = this.x + this.img.width / 2;
+            var yBullet = this.y + this.img.height / 2;
+            this.bulletsShooted++;
+            localBullets.push(new Bullet(xBullet, yBullet, bulletAngle, this.id, this.bulletsShooted));
+            this.nextShoot = 0;
+        }
     }
 
     this.move = function() {
+        this.nextShoot++;
         this.angle += this.rotation;
-        this.x += Math.cos(this.angle - Math.PI / 2) * this.speed * this.acceleration;
-        this.y += Math.sin(this.angle - Math.PI / 2) * this.speed * this.acceleration;
+        this.x += Math.cos(this.angle) * this.speed * this.acceleration;
+        this.y += Math.sin(this.angle) * this.speed * this.acceleration;
     }
 
     this.lvlUp = function() {
