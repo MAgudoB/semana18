@@ -58,6 +58,29 @@ function Ship(x, y, img, imageInd, angle, name) {
         this.life += life;
     }
 
+    this.removeLife = function(life) {
+        this.life -= life;
+        this.loadDamage();
+    }
+
+    this.loadDamage = function() {
+        var aux = this.img.src.split(".png");
+        switch (this.life) {
+            case 50:
+                this.img.src = aux[0] + "_50.png"
+                break;
+            case 25:
+                this.img.src = aux[0] + "_25.png"
+                break;
+            case 0:
+                this.img.src = aux[0] + "_0.png"
+                window.location.href = "end.html";
+                break;
+            default:
+                break;
+        }
+    }
+
     this.addAmmo = function(ammo) {
         this.ammo += ammo;
     }

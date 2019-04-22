@@ -95,6 +95,6 @@ function createNewPlayer(data, id) {
 }
 
 function createNewBullet(data) {
-    var newBullet = new Bullet(data.x, data.y, data.angle, data.playerId, data.id);
+    var newBullet = new Bullet(data.x, data.y, data.angle, data.playerId, data.id, data.removed);
     bullets.push(newBullet);
 }

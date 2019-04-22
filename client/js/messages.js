@@ -12,20 +12,20 @@ function postPlayerInfo(ship) {
     return JSON.stringify({ "type": UPDATE_PLAYER, "x": ship.x, "y": ship.y, "angle": ship.angle, "imageInd": ship.imageInd });
 }
 
-function postLocalBullets(bullet) {
-    return JSON.stringify({ "type": UPDATE_BULLETS, "x": bullet.x, "y": bullet.y, "angle": bullet.angle, "playerId": bullet.playerId, "id": bullet.id });
+function postLocalBullets() {
+    var auxBullets = new Array();
+    for (var b in localBullets) {
+        var bullet = {};
+        bullet.x = localBullets[b].x;
+        bullet.y = localBullets[b].y;
+        bullet.angle = localBullets[b].angle;
+        bullet.playerId = localBullets[b].playerId;
+        bullet.id = localBullets[b].id;
+        bullet.removed = localBullets[b].removed;
+        auxBullets.push(bullet);
+    }
+    return JSON.stringify({ "type": UPDATE_BULLETS, "bullets": auxBullets });
 }
-// function getBullestMsg(bullets) {
-//     return JSON.stringify(bullets)
-// }
-
-// function getCollisionMsg(bullet) {
-
-// }
-
-// function getCollectable(collectable) {
-//     return JSON.stringify({ id: collectable.id })
-// }
 
 //Mensajes que recibe el cliente
 function updateId(msg) {
@@ -53,21 +53,104 @@ function updatePlayers(data) {
 }
 
 function updateBullets(data) {
-    for (var i in data.bullets) {
-        var remoteBullet = data.bullets[i];
-        var found = false;
-        if (remoteBullet != null) {
-            for (var p in bullets) {
-                if (bullets[p].id == remoteBullet.id && bullets[p].playerId != player.id) {
-                    bullets[p].x = remoteBullet.x;
-                    bullets[p].y = remoteBullet.y;
-                    bullets[p].angle = remoteBullet.angle;
-                    found = true;
+    if (data.bullets[0].playerId == player.id) {
+        for (var remoteBullets in data.bullets) {
+            for (var b = localBullets.length - 1; b > 0; b--) {
+                if (localBullets[b].id == data.bullets[remoteBullets].id) {
+                    if (data.bullets[remoteBullets].removed) {
+                        localBullets.splice(b, 1);
+                    }
+                    else if (data.bullets[remoteBullets].collided) {
+                        localBullets.splice(b, 1);
+                        for (var p in players) {
+                            if (players[p].id == data.bullets[remoteBullets].target) {
+                                players[p].removeLife(25);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
-            if (!found && remoteBullet.playerId != player.id) {
-                createNewBullet(remoteBullet);
+        }
+    }
+    else {
+        for (var remoteBullets in data.bullets) {
+            var remoteBullet = data.bullets[remoteBullet];
+            var found = false;
+            for (var b = bullets.length - 1; b > 0; b--) {
+                if (bullets[b].id == data.bullets[remoteBullets].id) {
+                    if (data.bullets[remoteBullets].removed) {
+                        bullets.splice(b, 1);
+                    }
+                    else if (data.bullets[remoteBullets].collided) {
+                        bullets.splice(b, 1);
+                        if (data.bullets[remoteBullets].target == player.id) {
+                            player.removeLife(25);
+                        }
+                        else {
+                            for (var p in players) {
+                                if (players[p].id == data.bullets[remoteBullets].target) {
+                                    players[p].removeLife(25);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    found = true;
+                    break;
+                }
             }
+            if (!found) {
+                createNewBullet(data.bullets[remoteBullets]);
+            }
+        }
+    }
+}
+
+function removePlayers(data) {
+    for (var i in data.removePlayers) {
+        var removedPlayer = data.removePlayers[i];
+        if (removedPlayer != null) {
+            for (var p in players) {
+                if (players[p].id == removedPlayer.id) {
+                    players.splice(i, 1);
+                }
+            }
+            if (player.id == removedPlayer.id) {
+                window.location.href = "end.html";
+            }
+        }
+    }
+}
+
+function removeBullets(data) {
+    for (var i in data.bullets) {
+        var removedBullet = data.bullets[i];
+        if (removedBullet != null && !removeBullets.removed) {
+            for (var p in bullets) {
+                if (bullets[p].id == removedBullet.id && bullets[p].playerId == removedBullet.playerId) {
+                    //bullets.splice(p, 1);
+                    bullets[p].removed = true;
+                }
+            }
+            for (var p in localBullets) {
+                if (localBullets[p].id == removedBullet.id && localBullets[p].playerId == removedBullet.playerId) {
+                    localBullets[p].removed = true;
+                }
+            }
+            player.removeLife(25);
+        }
+    }
+}
+
+function handleCollision(data) {
+    removeBullets(data);
+}
+
+function playerDisconnected(data) {
+    for (var i in players) {
+        if (players[i].id == data.id) {
+            players.splice(i, 1);
         }
     }
 }

@@ -8,10 +8,10 @@ $(document).ready(function() {
     firstMessage = false;
     connected = false;
     playButton = $("#playButton");
-    socket = new WebSocket(url);
-    socket.onopen = function(msg) {
-        connected = true;
-        playButton.on("click", function() {
+    playButton.on("click", function() {
+        socket = new WebSocket(url);
+        waitForSocketConnection(socket, function() {
+            loadSocket();
             var x = randomRangeNumber(0, window.innerWidth);
             var y = randomRangeNumber(0, window.innerHeight);
             var num = randomRangeNumber(0, 5);
@@ -19,7 +19,16 @@ $(document).ready(function() {
             player = new Ship(x, y, getImageByNum(num), num, 0, name);
             initKeys();
             send(getId());
+            connected = true;
         });
+    });
+
+});
+
+function loadSocket() {
+    socket.onopen = function(msg) {
+        connected = true;
+
     };
 
     socket.onmessage = function(msg) {
@@ -35,42 +44,50 @@ $(document).ready(function() {
                 case UPDATE_BULLETS:
                     updateBullets(msgJson);
                     break;
+                case REMOVE_PLAYERS:
+                    removePlayers(msgJson);
+                    break;
+                case PLAYER_QUIT:
+                    playerDisconnected(msgJson);
+                    break;
                 default:
                     break;
             }
         }
-        //parse msg
-        // case id
-        // case new bullet
-        // if (!firstMessage) {
-        //     player.id = msg.data;
-        //     firstMessage = true;
-        // }
-        // else {
-        //     if (msg != null && msg != undefined) {
-        //         context.clearRect(0, 0, 1000, 1000)
-        //         var data = JSON.parse(msg.data);
-        //         updatePlayers(data);
-        //         drawBullets();
-        //         player.update();
-        //         drawPlayers();
-        //     }
-        // }
     };
 
     socket.onclose = function(msg) {
-        console.log("cerrado")
+        window.location.href = "end.html";
     };
-});
+}
 
 function bucle() {
-    context.clearRect(0, 0, canvasWidth, canvasHeight)
-    player.update();
-    drawPlayers();
-    drawBullets();
-    send(postPlayerInfo(player));
-    for (var i in localBullets) {
-        send(postLocalBullets(localBullets[i]));
+    if (connected) {
+        context.clearRect(0, 0, canvasWidth, canvasHeight)
+        player.update();
+        drawPlayers();
+        drawBullets();
+        send(postPlayerInfo(player));
+        if (localBullets.length > 0) {
+            send(postLocalBullets());
+        }
     }
     setTimeout("bucle()", 10);
+}
+
+function waitForSocketConnection(socket, callback) {
+    setTimeout(
+        function() {
+            if (socket.readyState === 1) {
+                console.log("Connection is made")
+                if (callback != null) {
+                    callback();
+                }
+            }
+            else {
+                console.log("wait for connection...")
+                waitForSocketConnection(socket, callback);
+            }
+
+        }, 5); // wait 5 milisecond for the connection...
 }

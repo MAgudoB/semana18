@@ -9,6 +9,7 @@ function Bullet(x, y, angle, playerId, id) {
     this.velX = Math.cos(this.angle) * this.speed;
     this.velY = Math.sin(this.angle) * this.speed;
     this.energy = 100;
+    this.removed = false;
 
     this.draw = function() {
         context.drawImage(this.img, this.x, this.y);
@@ -27,14 +28,16 @@ function Bullet(x, y, angle, playerId, id) {
             this.x > canvasWidth ||
             this.y > canvasHeight ||
             this.y + this.img.height < 0) {
+            //send(postLocalBullets(this, true));
             this.destroyBullet();
         }
     }
 
     this.destroyBullet = function() {
-        for (var i in bullets) {
-            if (bullets[i].playerId == this.playerId && bullets[i].id == this.id) {
-                bullets.splice(i, 1);
+        for (var i in localBullets) {
+            if (localBullets[i].playerId == this.playerId && localBullets[i].id == this.id) {
+                //localBullets.splice(i, 1);
+                localBullets[i].removed = true;
             }
         }
     }
